@@ -1,0 +1,66 @@
+<h1>Company Name</h1>
+
+<style type="text/css">
+	
+	h1 {
+		text-decoration-style: Big Caslon;
+		margin-left: 20px;
+		margin-top: 10px;
+		position: fixed;
+	}
+
+
+	#d1{
+		padding: 150px;
+	}
+
+	#d2 {
+		
+		margin-left: 600px;
+		margin-top: 700px;
+		height: 500px;
+		align-content: right
+		margin-left: 200px;
+		margin-top:  100px;
+		/*position: fixed;*/
+	}
+
+	input[type=submit]{
+		background-color: rgba(40,255,110,0.7);
+		border-radius: 20px;
+		height: 50px;
+		width:80px;
+	}
+
+	body{
+		background-color: rgba(150,225,150,0.3);
+	}
+	h4{
+		font-family: Verdana;
+		margin-left: 4%;
+		color: rgba(225,100,100,0.8);
+
+	}
+</style>
+<body>
+<form action="/" method="GET">
+	<center><input type="submit" name="" value="home"></center>
+</form>
+<div id="d1" style="float: left;">
+
+<% user_list.each do |user| %>
+	
+	<h4><%=user.name%></h4>
+	
+
+<% end %>
+</div  >
+
+<div id="d2" style="float: left" >
+	<center><img src="http://www.iconarchive.com/download/i87088/graphicloads/colorful-long-shadow/Hand-thumbs-up-3.ico"></center>
+</div>
+
+
+</body>
+
+

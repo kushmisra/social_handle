@@ -1,0 +1,126 @@
+
+<style type="text/css">
+	#cn{
+
+	}
+	#leftoptions{
+		
+		float: left;
+		height: 800px;
+		width: 350px;
+		background-color: rgba(232,233,3,0.7);
+		position: fixed;
+	}
+	#content{
+		float: left;
+		width:950px;
+		margin-left: 370px;
+		
+		background-color: rgba(100,100,255,0.7);
+	}
+	#message{
+		background-color: green;
+	}
+</style>
+<div id="leftoptions">
+
+<center>
+<h4 id="cn"> welcome <%= user.name %> </h4>
+
+<form action="/logout" method="POST">
+	<input type="submit" name="" value="logout">
+</form>
+
+
+<form action="/find_friend" method="POST">
+	<input style="width: 250px;" type="text" name="find_friend" placeholder="enter the username of your friend"  >
+	<br><br>
+	<input type="submit" name="" value="search my friend <3">
+</form>
+</center>
+</div>
+
+<div id="content">
+
+
+<form action="/add_message" method="POST">
+<center>	
+	<input style="height: 100px;width: 800px;" type="text" name="tweet" placeholder="write your message here" >
+	<br>
+	</center>
+	<input style="margin-left: 500px;" type="submit" name="" value="post message" >
+
+</form>
+
+
+	
+		<%message_list.reverse!%>
+		<% message_list.each do |post| %>
+	
+		<% message = post.message.to_s.split("@") %>
+	<div id="message">
+		<em><i><h3 style="margin-left: 30px; margin-top: 50px;"><%=message[0]%></h3></i></em>
+
+		
+
+		<center><div style="border-radius: 30px; width: 800px;"><h1 style="border-radius: 30px; background-color: rgba(0,255,0,0.5);"><%=message[1]%></h1></div></center>
+
+		<br/>
+		<div style="margin-left: 70px;">
+		<% if post.who_liked %>
+				<form action="/display_liker" method="POST">
+					<input type="hidden" name="post_id" value="<%=post.id%>">
+					<input type="submit" value="<%= post.who_liked.length/2 %>"/> &nbsplike
+				</form> 
+			
+		<%else%>
+			<h4>0 likes <h4>
+		<%end%>
+		
+		<form action="/like" method="POST">
+			<input type="hidden" name="lm_id" value="<%=post.id%>" >
+			<input type="submit" name="" value="like">
+		</form>
+		</div>
+		<center><h3><i>comments</i></h3>
+
+		<form action="/add_comment" method="POST">
+			<input type="hidden" name="id" value="<%=post.id%>">
+			<input style="background-color:#4caf50; 
+              border: solid 1px #6E6E6E;
+              height: 30px; 
+              width:650px;
+              font-size:16px; 
+              vertical-align:9px;color:#3e2723" type="text" name="comment" placeholder="enter your comment here">
+			<input type="submit" name="" value="comment">
+		</form>
+		</center>
+		
+			<% if post.comments%>
+				
+				<br/>
+	         	<%comment_list=post.comments.split("%") 
+	         	 comment_list.reverse!	
+	        	 comment_list.each do |com|%>
+	         		<center><div style="padding: 20px; width: 500px; background-color: #4caf50; border-radius:30px;">
+	         			
+	         			<%com=com.split("@")%>
+	         			<%= com[0] %>::
+	         			<%= com[1] %>
+	         		</div></center>
+	         		<br>
+	         	<%end%>
+
+			<%end%>   
+		
+	</div>
+			
+			<br/><br/><br/>
+			<%  end %>
+
+	
+
+</div>
+
+
+
