@@ -8,6 +8,13 @@
 	<input type="submit" name="" value="add friend">
 </form>
 
+
+<form action="/chat" method="POST">
+	<input type="hidden" name="friend" value="<%= user.id %>">
+	<input type="submit" name="" value="chat with friend">
+</form>
+
+
 <form action="/" method="GET">
 	<input type="submit" name="" value="home">
 </form>

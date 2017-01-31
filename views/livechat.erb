@@ -1,0 +1,11 @@
+<meta http-equiv="refresh" content="2">
+
+<% if chat.messages %>
+	<% message_list=chat.messages.split("@#$%^&*()")%>
+
+		<% message_list.each do |message|%>	
+			<%=message%>
+ 			<br>
+ 		<%end%>	
+
+<%end%>

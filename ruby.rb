@@ -3,6 +3,8 @@ require 'data_mapper'
 
 set :sessions,true
 
+set :bind,'0.0.0.0'
+
 DataMapper.setup(:default,"sqlite:///#{Dir.pwd}/todolist.db")
 set :public_folder,File.dirname(__FILE__)+'/static'
 
@@ -23,9 +25,20 @@ class Post
 	property :comments,String,:length=>10000
 end
 
+class Chat
+	include DataMapper::Resource
+	property :id , Serial
+	property :f_user,Integer
+	property :s_user,Integer
+	property :f_name,String
+	property :s_name,String
+	property :messages,String,:length=>10000
+end
+
 DataMapper.finalize
 Post.auto_upgrade!
 User.auto_upgrade!
+Chat.auto_upgrade!
 
 
 get '/'  do
@@ -265,5 +278,107 @@ post '/add_comment' do
 	puts post.comments,"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 
 	redirect '/'
+end
+
+$running_chat=nil
+$running_user=nil
+
+post '/chat' do
+
+	
+	chat_list=Chat.all(:f_user=>params[:friend])	
+
+	if chat_list
+
+		chat_list.each do |chat|
+			if chat.s_user == session[:current]
+				$running_chat=chat
+				$running_user=2
+				redirect '/gchat'
+				
+			end
+
+ 		end
+
+	end
+
+	chat_list=Chat.all(:f_user=>session[:current])	
+
+	if chat_list
+
+		chat_list.each do |chat|
+			if chat.s_user == params[:friend]
+				$running_chat=chat
+				$running_user=1
+				redirect '/gchat'
+			end
+
+ 		end
+
+	end
+
+	chat=Chat.new
+	chat.f_user=session[:current]
+	chat.f_name = User.get(session[:current]).name
+	chat.s_user=params[:friend]
+	chat.s_name = User.get(params[:friend]).name
+	chat.save
+	$running_chat=chat
+	$running_user=1
+	redirect '/gchat'
+
+
+
+end
+
+get '/livechat' do
+	
+	$running_chat = Chat.get($running_chat.id)
+	erb :livechat ,locals:{:chat=>$running_chat}
+
+end
+
+get '/gchat' do
+	$running_chat = Chat.get($running_chat.id)
+	erb :chat,locals: { :chat=>$running_chat , :c_user=>$running_user }
+	# def every_n_seconds(n)
+	  
+	    
+	#     before = Time.now
+	#     puts "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+	#     if $running_chat
+	#     	$running_chat = Chat.get($running_chat.id)
+	#     end
+	# 	erb :chat,locals: { :chat=>$running_chat , :c_user=>$running_user }
+	#     interval = n-(Time.now-before)
+	#     sleep(interval) if interval > 0
+	  
+	# end
+
+	# every_n_seconds(10) 
+
+	
+
+end
+
+get '/chatppl' do
+		running_chat = Chat.get(running_chat.id)
+		erb :chat,locals: { :chat=>running_chat , :c_user=>running_user }
+end
+
+post '/chatting' do
+
+	chat = Chat.get(params[:chat_id])
+
+	if chat.messages
+		chat.messages+=User.get(session[:current]).name+"@"+params[:mes]+"@#$%^&*()"
+	else
+		chat.messages = User.get(session[:current]).name+"@"+params[:mes]+"@#$%^&*()"
+	end
+	chat.save
+	running_chat=chat
+	puts chat.id,"chatchatchatchatchatchatchatchatchatchatchatchatchatchat"
+	redirect '/gchat'
+
 end
 

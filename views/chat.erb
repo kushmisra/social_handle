@@ -1,0 +1,20 @@
+
+
+
+<h1> welcome to chatting </h1>
+you are chatting with 
+<% if c_user == 1 %>
+   <%= chat.s_name %>
+<% else %>
+  	<%= chat.f_name %>
+<%end%>
+
+
+<form action="/chatting" method="POST">
+	<input type="hidden" name="chat_id" value="<%=chat.id%>">
+	<input type="text" name="mes" placeholder="type your message">
+	<input type="submit" name="" value="send">
+</form>
+
+<iframe id='dynamic-content' src='/livechat' />
+
