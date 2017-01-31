@@ -14,6 +14,7 @@ class User
 	property :name,String
 	property :password,String
 	property :friends,String,:length=>1000
+	property :pending_friends,String,:length=>1000
 end
 
 class Post
@@ -40,6 +41,7 @@ Post.auto_upgrade!
 User.auto_upgrade!
 Chat.auto_upgrade!
 
+$post_to_edit=nil
 
 get '/'  do
 	
@@ -79,7 +81,7 @@ get '/'  do
 			end	
 	end
 	
-	erb :main,locals:{:user=>user,:message_list=>message_list}
+	erb :main,locals:{:user=>user,:message_list=>message_list,:post_to_edit=>$post_to_edit}
 
 end
 
@@ -128,6 +130,7 @@ post '/register' do
 	user.name=name
 	user.password=password
 	user.friends=nil
+	user.pending_friends=nil;
 	user.save
 	session[:current]=user.id
 	redirect '/'
@@ -152,11 +155,54 @@ post '/add_message' do
 	redirect '/'
 end
 
+post '/editmsg' do
+ 	$post_to_edit=nil 	
+  	post=Post.get(params[:id])
+  	post.message = User.get(session[:current]).name.to_s + "@" + params[:editedmsg]
+  	post.save
+  	redirect '/'
+end
+
+post '/delete_post_main' do
+	post=Post.get(params[:id].to_i)
+	post.destroy
+	redirect '/'
+end
+
+post '/edit_post_main' do
+	$post_to_edit=params[:id].to_i
+	redirect '/'
+end
+
+
+
+get '/pending_list' do
+
+	user=User.get(session[:current])
+	pending_list=user.pending_friends.split(" ")
+	pending_user=[];
+	if pending_list
+		pending_list.each do|p_user|
+			pending_user<<User.get(p_user.to_i)
+		end
+	end
+
+	erb :pending_friends,locals:{:pending_user=>pending_user}
+
+end
+
+
+$friend_name=nil;
 post '/find_friend' do
+	$friend_name=params[:find_friend]
+	redirect '/find_friendg'
+end
+
+get '/find_friendg' do
 	# puts ";hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
 
-	friend_name=params[:find_friend]
-	user = User.all(:name=>friend_name).first
+	
+	user = User.all(:name=>$friend_name).first
 			 # puts user.name,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 			 
@@ -183,6 +229,39 @@ post '/find_friend' do
 
 end
 
+post '/final_add' do
+
+	friend_user=User.get(params[:id].to_i)
+	user=User.get(session[:current])
+
+	if friend_user.friends
+		friend_user.friends+=" #{user.id.to_s}"
+	else
+		friend_user.friends=" #{user.id.to_s}"
+	end
+	if user.friends
+		user.friends+=" #{friend_user.id.to_s}"
+	else
+		user.friends=" #{friend_user.id.to_s}"
+	end
+ 	
+ 	if user.pending_friends
+		pending_list=user.pending_friends.split(" ")
+		user.pending_friends=nil
+	
+		pending_list.each do |pending|
+			if pending==params[:id].to_s
+				next
+			end
+			user.pending_friends+=pending+" "
+		end
+	end
+	user.save
+	friend_user.save
+
+	redirect '/pending_list'
+
+end
 
 post '/add_friend' do
 
@@ -191,19 +270,32 @@ post '/add_friend' do
 
 	user=User.get(session[:current])
 	friend_user=User.get(friend)
+	$friend_name=friend_user.name
+
 	if friend_user.friends
-		friend_user.friends+=" #{user.id.to_s}"
-	else
-		friend_user.friends=" #{user.id.to_s}"
+		friend_list=friend_user.friends.split(" ")
+		friend_list.each do |fr|
+			if fr == session[:current].to_s
+				redirect '/find_friendg'
+			end
+		end
+		
 	end
-	if user.friends
-		user.friends+=" #{friend.to_s}"
+
+	if friend_user.pending_friends
+		friend_list=friend_user.pending_friends.split(" ")
+		friend_list.each do |fr|
+			if fr == session[:current].to_s
+				redirect '/find_friendg'
+			end
+		end
+		friend_user.pending_friends+=session[:current].to_s+" "
 	else
-		user.friends=" #{friend.to_s}"
+		friend_user.pending_friends=session[:current].to_s+" "
 	end
 	user.save
 	friend_user.save
-	redirect '/'
+	redirect '/find_friendg'
 end
 
 
@@ -377,7 +469,6 @@ post '/chatting' do
 	end
 	chat.save
 	running_chat=chat
-	puts chat.id,"chatchatchatchatchatchatchatchatchatchatchatchatchatchat"
 	redirect '/gchat'
 
 end

@@ -30,8 +30,14 @@
 <form action="/logout" method="POST">
 	<input type="submit" name="" value="logout">
 </form>
-
-
+<% if user.pending_friends%>
+	
+	
+		<form action="/pending_list" method="GET">
+			<input type="submit" name="" value="pending list">
+		</form>
+		
+<%end%>
 <form action="/find_friend" method="POST">
 	<input style="width: 250px;" type="text" name="find_friend" placeholder="enter the username of your friend"  >
 	<br><br>
@@ -63,7 +69,17 @@
 
 		
 
-		<center><div style="border-radius: 30px; width: 800px;"><h1 style="border-radius: 30px; background-color: rgba(0,255,0,0.5);"><%=message[1]%></h1></div></center>
+		<center><div style="border-radius: 30px; width: 800px;"><h1 style="border-radius: 30px; background-color: rgba(0,255,0,0.5);">
+			<%if post_to_edit && post_to_edit==post.id %>	
+				<form action="/editmsg" method="POST">
+					<input type="hidden" name="id" value="<%=post.id%>">
+					<input type="text" name="editedmsg" value="<%=message[1]%>">
+					<input type="submit" name="" value="done!">
+				</form>
+			<%else%>
+				<%=message[1]%>
+			<%end%>
+		</h1></div></center>
 
 		<br/>
 		<div style="margin-left: 70px;">
@@ -81,6 +97,23 @@
 			<input type="hidden" name="lm_id" value="<%=post.id%>" >
 			<input type="submit" name="" value="like">
 		</form>
+		
+		<% if user.id == post.who_posted %>
+		
+		<form action="/delete_post_main" method="POST">
+			<input type="hidden" name="id" value="<%=post.id%>" >
+			<input type="submit" name="" value="delete">
+		</form>
+
+		<form action="/edit_post_main" method="POST">
+			<input type="hidden" name="id" value="<%=post.id%>" >
+			<input type="submit" name="" value="edit">
+		</form>
+		
+
+
+		<%end%>
+		
 		</div>
 		<center><h3><i>comments</i></h3>
 

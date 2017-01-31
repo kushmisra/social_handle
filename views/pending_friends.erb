@@ -1,0 +1,22 @@
+
+
+<h1>pending friends</h1>
+
+<form action="/" method="GET">
+		
+		<input type="submit" value="home">
+</form>
+
+
+<% pending_user.each do |user| %>
+
+	<form action="/final_add" method="POST">
+		<input type="hidden" name="id" value="<%=user.id%>">
+		<input type="submit" value="<%= user.name %>">
+	</form>
+	<br>
+	
+<% end%>
+
+
+
