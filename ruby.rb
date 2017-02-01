@@ -177,13 +177,16 @@ end
 
 
 get '/pending_list' do
-
-	user=User.get(session[:current])
-	pending_list=user.pending_friends.split(" ")
 	pending_user=[];
-	if pending_list
-		pending_list.each do|p_user|
-			pending_user<<User.get(p_user.to_i)
+	user=User.get(session[:current])
+	if user.pending_friends
+		pending_list=user.pending_friends.split(" ")
+
+		
+		if pending_list
+			pending_list.each do|p_user|
+				pending_user<<User.get(p_user.to_i)
+			end
 		end
 	end
 
