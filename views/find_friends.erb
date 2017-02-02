@@ -2,11 +2,19 @@
 <h1>Company Name</h1>
 
 <center><h2>your friend <%=user.name%> found</h2>
-
+<h4><%=fs%></h4>
+<%if fs == 0 %>
 <form action="/add_friend" method="POST">
 	<input type="hidden" name="friend" value="<%= user.id %>">
 	<input type="submit" name="" value="add friend">
 </form>
+<% elsif fs == 1 %>
+  <h3>friend request send</h3>
+<%else %>
+  <h3>friends</h3>
+<% end %>
+	
+
 
 
 <form action="/chat" method="POST">

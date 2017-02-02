@@ -200,7 +200,7 @@ post '/find_friend' do
 	$friend_name=params[:find_friend]
 	redirect '/find_friendg'
 end
-
+$friend_status=0
 get '/find_friendg' do
 	# puts ";hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
 
@@ -222,8 +222,9 @@ get '/find_friendg' do
 					message_list<<post
 				end	
 		end
-
-		erb :find_friends,locals:{:user=>user,:message_list=>message_list}
+		x=$friend_status
+		$friend_status=0
+		erb :find_friends,locals:{:user=>user,:message_list=>message_list,:fs=>x}
 		
 	else
 	
@@ -279,6 +280,7 @@ post '/add_friend' do
 		friend_list=friend_user.friends.split(" ")
 		friend_list.each do |fr|
 			if fr == session[:current].to_s
+				$friend_status=2
 				redirect '/find_friendg'
 			end
 		end
@@ -289,6 +291,7 @@ post '/add_friend' do
 		friend_list=friend_user.pending_friends.split(" ")
 		friend_list.each do |fr|
 			if fr == session[:current].to_s
+				$friend_status=1
 				redirect '/find_friendg'
 			end
 		end
@@ -298,6 +301,7 @@ post '/add_friend' do
 	end
 	user.save
 	friend_user.save
+	$friend_status=0
 	redirect '/find_friendg'
 end
 
