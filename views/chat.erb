@@ -5,9 +5,23 @@
 you are chatting with 
 <% if c_user == 1 %>
    <%= chat.s_name %>
+
+   <form action="/find_friend" method="POST">
+	<input type="hidden" name="find_friend" value="<%=chat.s_name%>">
+	<input type="submit" name="" value="exit chatting">
+    </form>
+
 <% else %>
   	<%= chat.f_name %>
+  	<form action="/find_friend" method="POST">
+	<input type="hidden" name="find_friend" value="<%=chat.f_name%>">
+	<input type="submit" name="" value="exit chatting">
+	</form>
+
 <%end%>
+
+
+
 
 
 <form action="/chatting" method="POST">
@@ -16,5 +30,5 @@ you are chatting with
 	<input type="submit" name="" value="send">
 </form>
 
-<iframe id='dynamic-content' src='/livechat' />
+<iframe style="width: 300px; height: 300px;" id='dynamic-content' src='/livechat' />
 
